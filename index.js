@@ -116,6 +116,8 @@ frontend:
   cache:
     paths:
       - node_modules/**/*`,
+      iamrole,
+      platform
     } = amplify
 
     buildCommandEnvVars.prefix = buildCommandEnvVars.prefix || ''
@@ -136,7 +138,9 @@ frontend:
       buildSpec,
       artifactBaseDirectory,
       preBuildWorkingDirectory,
-      buildCommandEnvVars
+      buildCommandEnvVars,
+      iamrole,
+      platform
     }
   }
 
@@ -272,6 +276,8 @@ frontend:
       name,
       stage,
       buildSpec,
+      platform,
+      iamrole
     } = this.amplifyOptions
 
     addBaseResourcesAndOutputs({
@@ -285,6 +291,8 @@ frontend:
       accessToken,
       buildSpec,
       namePascalCase,
+      platform,
+      iamrole
     })
 
     if (branch) {
@@ -448,12 +456,16 @@ function addBaseResourcesAndOutputs({
   buildSpec,
   Outputs,
   namePascalCase,
+  platform,
+  iamrole
 }) {
   Resources[`${namePascalCase}AmplifyApp`] = {
     Type: 'AWS::Amplify::App',
     Properties: {
       Name: name,
-      BuildSpec: buildSpec
+      BuildSpec: buildSpec,
+      Platform: platform ? platform : 'WEB',
+      IAMServiceRole: iamrole ? iamrole : undefined
     }
   }
   if (!isManual) {
